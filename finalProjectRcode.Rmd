@@ -1,0 +1,164 @@
+---
+title: "osFinalProject"
+output: pdf_document
+date: "2023-12-12"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(ggplot2)
+library(tidyverse)
+library(dplyr)
+```
+
+## Change file path to csv's
+```{r}
+ext2 <- read.csv("myout-ext2.csv", header=T)
+ext4 <- read.csv("myout-ext4.csv", header=T)
+fat32 <- read.csv("myout-fat32.csv", header=T)
+xfs <- read.csv("myout-xfs.csv", header=T)
+zfs <- read.csv("myout-zfs.csv", header=T)
+```
+
+## ext2
+```{r}
+#find mean time values for all counts
+mean_ext2_all_counts <- ext2 %>%
+  group_by(bs, count) %>%
+  summarize(mean_timevalue = mean(timevalue))
+mean_ext2_all_counts
+#create performance graph using mean time values
+ggplot(mean_ext2_all_counts, aes(x = count, y = mean_timevalue, color = factor(bs))) +
+  geom_line() +
+  geom_point() +
+  labs(title = "ext2: Mean Time Values for All Counts",
+       x = "Count",
+       y = "Mean Time Value",
+       color = "Block Size") +
+  theme_minimal()
+
+```
+
+## ext4
+```{r}
+#find mean time values for all counts
+mean_ext4_all_counts <- ext4 %>%
+  group_by(bs, count) %>%
+  summarize(mean_timevalue = mean(timevalue))
+mean_ext4_all_counts
+#create performance graph using mean time values
+ggplot(mean_ext4_all_counts, aes(x = count, y = mean_timevalue, color = factor(bs))) +
+  geom_line() +
+  geom_point() +
+  labs(title = "ext4: Mean Time Values for All Counts",
+       x = "Count",
+       y = "Mean Time Value",
+       color = "Block Size") +
+  theme_minimal()
+
+```
+
+
+## fat32
+```{r}
+#find mean time values for all counts
+mean_fat32_all_counts <- fat32 %>%
+  group_by(bs, count) %>%
+  summarize(mean_timevalue = mean(timevalue))
+mean_fat32_all_counts
+#create performance graph using mean time values
+ggplot(mean_fat32_all_counts, aes(x = count, y = mean_timevalue, color = factor(bs))) +
+  geom_line() +
+  geom_point() +
+  labs(title = "fat32: Mean Time Values for All Counts",
+       x = "Count",
+       y = "Mean Time Value",
+       color = "Block Size") +
+  theme_minimal()
+
+```
+
+## xfs
+```{r}
+#find mean time values for all counts
+mean_xfs_all_counts <- xfs %>%
+  group_by(bs, count) %>%
+  summarize(mean_timevalue = mean(timevalue))
+mean_xfs_all_counts
+#create performance graph using mean time values
+ggplot(mean_xfs_all_counts, aes(x = count, y = mean_timevalue, color = factor(bs))) +
+  geom_line() +
+  geom_point() +
+  labs(title = "xfs: Mean Time Values for All Counts",
+       x = "Count",
+       y = "Mean Time Value",
+       color = "Block Size") +
+  theme_minimal()
+
+```
+
+
+## zfs
+```{r}
+#find mean time values for all counts
+mean_zfs_all_counts <- zfs %>%
+  group_by(bs, count) %>%
+  summarize(mean_timevalue = mean(timevalue))
+mean_zfs_all_counts
+#create performance graph using mean time values
+ggplot(mean_zfs_all_counts, aes(x = count, y = mean_timevalue, color = factor(bs))) +
+  geom_line() +
+  geom_point() +
+  labs(title = "zfs: Mean Time Values for All Counts",
+       x = "Count",
+       y = "Mean Time Value",
+       color = "Block Size") +
+  theme_minimal()
+
+```
+
+
+```{r}
+#combine all dataframes into one
+all_data <- rbind(
+  transform(ext2, fs = 'ext2'),
+  transform(ext4, fs = 'ext4'),
+  transform(fat32, fs = 'fat32'),
+  transform(xfs, fs = 'xfs'),
+  transform(zfs, fs = 'zfs')
+)
+
+#find mean time values for all counts
+mean_all_counts <- all_data %>%
+  group_by(fs, bs, count) %>%
+  summarize(mean_timevalue = mean(timevalue))
+
+mean_all_counts
+
+#create a performance graph using mean time values
+ggplot(mean_all_counts, aes(x = count, y = mean_timevalue, color = factor(bs))) +
+  geom_line() +
+  geom_point() +
+  labs(title = "Mean Time Values for All File Systems and Counts",
+       x = "Count",
+       y = "Mean Time Value",
+       color = "Block Size") +
+  theme_minimal() +
+  facet_wrap(~fs)
+
+```
+
+
+```{r}
+# Create a performance graph using mean time values
+ggplot(mean_all_counts, aes(x = count, y = mean_timevalue, color = factor(bs), linetype = fs)) +
+  geom_line() +
+  geom_point() +
+  labs(title = "Mean Time Values for All File Systems and Counts",
+       x = "Count",
+       y = "Mean Time Value",
+       color = "Block Size",
+       linetype = "File System") +
+  theme_minimal()
+
+```
